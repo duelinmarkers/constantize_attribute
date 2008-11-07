@@ -1,0 +1,70 @@
+ConstantizeAttribute
+====================
+
+A simple Rails plugin that gives ActiveRecord a macro-style class method for
+declaring that certain attributes should have their values serialized with to_s
+and deserialized with constantize. This allows you to use Class and Module
+objects as attribute values.
+
+Since it uses to_s, the value will be stored as an easily read, easily updated
+string in the database, which is often preferable to the YAML you get with
+Rails' built in serialize macro.
+
+Note this also works with any other constant object that follows the same
+contract with respect to to_s and constantize being symmetrical, for example
+an enumeration created with [shameless plug!] the renum gem.
+
+Example
+=======
+
+# ... your migration ...
+create_table :robots do |t|
+  t.column :behavior_module, :string
+end
+
+# ... your model ...
+class Robot < ActiveRecord::Base
+  constantize_attribute :behavior_module
+end
+
+# ... some classes or modules you want to store as attribute values ...
+module RobotBehaviors
+  module Handy
+    def self.encounter
+      "Is there anything I can help you with?"
+    end
+  end
+
+  module Evil
+    def self.encounter
+      "I will destroy all humans."
+    end
+  end
+end
+
+# ... so now,
+robby = Robot.create :behavior_module => RobotBehaviors::Evil
+
+# Now "RobotBehaviors::Evil" is in the behavior_module column.
+
+robby.behavior_module.encounter # => "I will destroy all humans."
+
+robby.update_attribute :behavior_module, RobotBehaviors::Handy
+
+# Now "RobotBehaviors::Handy" is in the behavior_module column.
+
+robby = Robot.find :first
+
+robby.behavior_module.encounter # => "Is there anything I can help you with?"
+
+Usage
+=====
+
+You can specify multiple attribute names in one call. The constantize_attribute
+method is aliased to constantize_attributes if you find that reads better.
+
+Note this will not work with anonymous classes or modules: The definition is
+not stored in the database, only the name.
+
+
+Copyright (c) 2008 John D. Hume, released under the MIT license
