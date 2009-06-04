@@ -53,4 +53,16 @@ class ConstantizeAttributeTest < Test::Unit::TestCase
   def test_constantize_attributes_is_the_same_as_constantize_attribute
     assert_equal ConstantizeAttribute.instance_method(:constantize_attribute), ConstantizeAttribute.instance_method(:constantize_attributes)
   end
+  
+  def test_writer_passes_nil_along_as_nil
+    m = SomeModel.new
+    m.foo = nil
+    assert_nil m.attributes[:foo]
+  end
+
+  def test_reader_passes_nil_along_as_nil
+    m = SomeModel.new
+    m.attributes[:foo] = nil
+    assert_nil m.foo
+  end
 end

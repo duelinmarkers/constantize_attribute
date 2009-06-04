@@ -11,11 +11,13 @@ module ConstantizeAttribute
       module_eval <<-end_eval, __FILE__, __LINE__
 
         def #{name}= value
-          write_attribute(:#{name}, value.to_s)
+          value = value.nil? ? nil : value.to_s
+          write_attribute(:#{name}, value)
         end
 
         def #{name}
-          read_attribute(:#{name}).constantize
+          value = read_attribute(:#{name})
+          value.nil? ? nil : value.constantize
         end
 
       end_eval
