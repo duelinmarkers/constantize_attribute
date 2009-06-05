@@ -60,6 +60,12 @@ class ConstantizeAttributeTest < Test::Unit::TestCase
     assert_nil m.attributes[:foo]
   end
 
+  def test_writer_treats_empty_string_as_nil
+    m = SomeModel.new
+    m.foo = ""
+    assert_nil m.attributes[:foo]
+  end
+
   def test_reader_passes_nil_along_as_nil
     m = SomeModel.new
     m.attributes[:foo] = nil

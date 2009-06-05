@@ -11,7 +11,7 @@ module ConstantizeAttribute
       module_eval <<-end_eval, __FILE__, __LINE__
 
         def #{name}= value
-          value = value.nil? ? nil : value.to_s
+          value = (value.nil? || "" == value) ? nil : value.to_s
           write_attribute(:#{name}, value)
         end
 
